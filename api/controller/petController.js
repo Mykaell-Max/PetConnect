@@ -88,3 +88,13 @@ async function removeAdoptionRequest(req, res) {
         return res.status(500).send(error.message);
     }
 }
+
+
+module.exports = {
+    createPet,
+    getPet,
+    updatePet,
+    deletePet,
+    addAdoptionRequests,
+    removeAdoptionRequest
+};
