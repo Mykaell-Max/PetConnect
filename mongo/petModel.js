@@ -112,6 +112,6 @@ const petSchema = new mongoose.Schema({
     }
 });
 
-const PetModel = mongoose.model('Pet', petSchema);
+const Pet = mongoose.model('Pet', petSchema);
 
-module.exports = PetModel;
+module.exports = Pet;
