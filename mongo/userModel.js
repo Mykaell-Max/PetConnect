@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { hashPassword } = require('../utils/hashPassword');
 const userSchema = new mongoose.Schema(
   {
     name:{
@@ -88,5 +88,38 @@ const userSchema = new mongoose.Schema(
     }
     }
 );
+
+
+userSchema.pre('save', async function(next) {
+    if (this.isModified('password') || this.isNew) {
+        try {
+            this.password = await hashPassword(this.password);
+            next();
+        } catch (err) {
+            next(err);
+        }
+    } else {
+        next();
+    }
+});
+
+async function hashPasswordMiddleware(next) {
+    const update = this.getUpdate();
+    if (update.password) {
+        try {
+            update.password = await hashPassword(update.password);
+            this.setUpdate(update);
+            next();
+        } catch (err) {
+            next(err);
+        }
+    } else {
+        next();
+    }
+}
+userSchema.pre('findOneAndUpdate', hashPasswordMiddleware);
+userSchema.pre('updateOne', hashPasswordMiddleware);
+
+
 const User = mongoose.model('User', userSchema);
 module.exports = User;
