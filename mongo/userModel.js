@@ -89,6 +89,20 @@ const userSchema = new mongoose.Schema(
     }
 );
 
+
+userSchema.pre('save', async function(next) {
+    if (this.isModified('password') || this.isNew) {
+        try {
+            this.password = await hashPassword(this.password);
+            next();
+        } catch (err) {
+            next(err);
+        }
+    } else {
+        next();
+    }
+});
+
 async function hashPasswordMiddleware(next) {
     const update = this.getUpdate();
     if (update.password) {
