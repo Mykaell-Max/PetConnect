@@ -1,7 +1,8 @@
 const User = require("../../mongo/userModel");
+const path = require('path')
 const jwt = require('jsonwebtoken');
 const {comparePasswords} = require('../../utils/hashPassword')
-
+const {uploadFile, deleteFile} = require('../../firebase/firebaseFunctions')
 
 async function createUser(req, res) {
     try{
@@ -106,10 +107,50 @@ async function deleteUser(req, res) {
 }
 
 
+async function uploadProfilePic(req, res){
+    try{
+        const userId = req.params.userId;
+        const user = await User.findOne({_id: userId});
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found!' });
+        }
+
+        const image = req.file;
+        const imageName = `${userId}_${path.extname(image.originalname)}`
+
+        const imageUrl = await uploadFile(imageName, `users/${userId}`, image)
+        
+        if(imageUrl.status == 0){
+            return res.status(500).send(imageUrl.error);
+        }
+
+        user.profilePicture = imageUrl.url;
+        await user.save()
+
+        return res.status(201).json({message: 'Profile picture uploaded!'});
+    } 
+    catch (error) {
+        return res.status(500).send(error.message);   
+    }
+}
+
+
+async function profilePicDelete(req, res) {
+    try {
+        
+    } 
+    catch (error) {
+        return res.status(500).send(error.message);   
+    }
+}
+
+
 module.exports = {
     createUser, 
     loginUser,
     getUser, 
     updateUser, 
-    deleteUser
+    deleteUser,
+    uploadProfilePic
 };
