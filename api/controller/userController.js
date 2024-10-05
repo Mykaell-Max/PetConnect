@@ -115,9 +115,9 @@ async function uploadProfilePic(req, res){
         if (!user) {
             return res.status(404).json({ message: 'User not found!' });
         }
-
+        
         const image = req.file;
-        const imageName = `${userId}_${path.extname(image.originalname)}`
+        const imageName = `${userId}${path.extname(image.originalname)}`
 
         const imageUrl = await uploadFile(imageName, `users/${userId}`, image)
         
@@ -136,9 +136,39 @@ async function uploadProfilePic(req, res){
 }
 
 
-async function profilePicDelete(req, res) {
+async function deleteProfilePic(req, res) {
     try {
-        
+        const userId = req.params.userId;
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            return res.status(404).json({message: 'User not found!'});
+        }
+
+        if (!user.profilePicture) {
+            return res.status(400).json({message: 'No profile picturee!'});
+        }
+
+        const imageUrl = user.profilePicture;
+        const regularExp = /\/o\/(.+?)\?/; 
+        const match = imageUrl.match(regularExp);
+
+        if (!match) {
+            return res.status(400).json({ message: 'Invalid URL, BONACHÃO!' });
+        }
+
+        const filePath = match[1].replace(/%2F/g, '/');
+
+        const result = await deleteFile(filePath, '');
+
+        if (result.status === 0) {
+            return res.status(500).send(result.error);
+        }
+
+        user.profilePicture = '';
+        await user.save();
+
+        return res.status(200).json({ message: 'Profile picture deleted!' });
     } 
     catch (error) {
         return res.status(500).send(error.message);   
@@ -152,5 +182,6 @@ module.exports = {
     getUser, 
     updateUser, 
     deleteUser,
-    uploadProfilePic
+    uploadProfilePic,
+    deleteProfilePic
 };

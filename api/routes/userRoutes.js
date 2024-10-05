@@ -10,7 +10,8 @@ const {
     getUser, 
     updateUser, 
     deleteUser,
-    uploadProfilePic
+    uploadProfilePic,
+    deleteProfilePic
 } = require("../controller/userController");
 
 router.post('/register', createUser);
@@ -21,8 +22,7 @@ router.patch('/:userId', updateUser);
 router.delete('/:userId', deleteUser);
 
 router.post('/:userId/profilePic', imageHandler, uploadProfilePic);
-// router.patch('/:userId/profilePic', ); 
-// router.delete('/:userId/profilePic', );
+router.delete('/:userId/profilePic', deleteProfilePic);
 
 module.exports = router;
 
