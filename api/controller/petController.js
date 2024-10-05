@@ -1,5 +1,5 @@
 const Pet = require('../../mongo/petModel');
-
+const APIFeatures = require('../../utils/APIFeatures');
 async function createPet(req, res){
     try{
         const newPet = new Pet(req.body);
@@ -89,10 +89,24 @@ async function removeAdoptionRequest(req, res) {
     }
 }
 
+async function searchPets(req, res){
+    try{
+        const pets = new APIFeatures(Pet.find(), req.query).filter().sort().limitFields().paginate().query;
+        const result = await pets;
+        return res.status(200).json(result);
+
+    }
+    catch(error){
+        return res.status(500).send(error.message);
+    }
+}
+
+
 
 module.exports = {
     createPet,
     getPet,
+    searchPets,
     updatePet,
     deletePet,
     addAdoptionRequests,
