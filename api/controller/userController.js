@@ -117,9 +117,12 @@ async function uploadProfilePic(req, res){
         }
         
         const image = req.file;
-        const imageName = `${userId}${path.extname(image.originalname)}`
+        
+        const pngPicutreBuffer = await sharp(image.buffer).png().toBuffer();
 
-        const imageUrl = await uploadFile(imageName, `users/${userId}`, image)
+        const imageName = `${userId}.png}`
+
+        const imageUrl = await uploadFile(imageName, `users/${newPet._id}`, pngPicutreBuffer);
         
         if(imageUrl.status == 0){
             return res.status(500).send(imageUrl.error);

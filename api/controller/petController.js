@@ -1,27 +1,56 @@
 const Pet = require('../../mongo/petModel');
 const User = require('../../mongo/userModel');
+const sharp = require('sharp');
 const APIFeatures = require('../../utils/APIFeatures');
+const {uploadFile, deleteFile} = require('../../firebase/firebaseFunctions')
 
 
-async function createPet(req, res){
-    try{
-        const userId = req.body.donor;
+async function createPet(req, res) {
+    try {
+        let petData;
+        try {
+            petData = JSON.parse(req.body.petData);
+        } catch (error) {
+            return res.status(400).send("Invalid JSON format!");
+        }
 
-        const user = await User.findById(userId);
+        const userId = petData.donor;
+
+        const user = await User.findOne({ _id: userId });
 
         if (!user) {
             return res.status(404).send("User not found!");
         }
 
-        const newPet = new Pet(req.body);
+        const newPet = new Pet(petData);
+        const petPictures = req.files;
 
+        if (!petPictures || petPictures.length < 1 || petPictures.length > 5) {
+            return res.status(400).send("The pet needs to have at least one picture (and a maximum of five)");
+        }
+
+        const picturesUrls = [];
+
+        for (const [index, picture] of petPictures.entries()) {
+            const picName = `petPicture${index + 1}.png`;
+
+            const pngPictureBuffer = await sharp(picture.buffer).png().toBuffer();
+            const result = await uploadFile(picName, `pets/${newPet._id}`, pngPictureBuffer);
+
+            if (result.status === 1) {
+                picturesUrls.push(result.url);
+            } else {
+                return res.status(500).send(`Error: ${result.error}`);
+            }
+        }
+
+        newPet.pictures = picturesUrls;
         await newPet.save();
 
-        await User.findByIdAndUpdate(userId, { $addToSet: { registeredPets: newPet._id } }, { new: true });
+        await User.findOneAndUpdate({ _id: userId }, { $addToSet: { registeredPets: newPet._id } }, { new: true });
 
         return res.status(201).json(newPet);
-    }
-    catch(error){
+    } catch (error) {
         return res.status(500).send(error.message);
     }
 }
