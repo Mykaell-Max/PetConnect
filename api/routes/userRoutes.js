@@ -4,25 +4,26 @@ const router = express.Router();
 
 const imageHandler = multer().single('profilePicture');
 
-const {
-    createUser, 
-    loginUser,
-    getUser, 
-    updateUser, 
-    deleteUser,
-    uploadProfilePic,
-    deleteProfilePic
-} = require("../controller/userController");
+const userController = require("../controller/userController");
 
-router.post('/register', createUser);
-router.post('/login', loginUser)
+router
+    .route('/register')
+    .post(userController.createUser)
 
-router.get('/:userId', getUser);
-router.patch('/:userId', updateUser);
-router.delete('/:userId', deleteUser);
+router
+    .route('/login')
+    .post(userController.loginUser)
 
-router.post('/:userId/profilePic', imageHandler, uploadProfilePic);
-router.delete('/:userId/profilePic', deleteProfilePic);
+router
+    .route('/:userId')
+    .get(userController.getUser)
+    .patch(userController.updateUser)
+    .delete(userController.deleteUser)
+
+router
+    .route('/:userId/profilePic')
+    .post(imageHandler, userController.uploadProfilePic)
+    .delete(userController.deleteProfilePic)
+
 
 module.exports = router;
-
