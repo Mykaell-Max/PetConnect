@@ -3,11 +3,23 @@ const router = express.Router();
 
 const petController = require("../controller/petController");
 
-router.post('/register', petController.createPet);
-router.get('/:petId', petController.getPet);
-router.patch('/:petId', petController.updatePet);
-router.delete('/:petId', petController.deletePet);
-router.patch('/:petId/adoption-request', petController.addAdoptionRequests);
-router.delete('/:petId/adoption-request', petController.removeAdoptionRequest);
+router
+    .route(":petId")
+    .get(petController.getPet)
+    .patch(petController.updatePet)
+    .delete(petController.deletePet);
+
+router
+    .route(":petId/adoption-request")
+    .patch(petController.addAdoptionRequests)
+    .delete(petController.removeAdoptionRequest);
+
+router
+    .route("/searchAll")
+    .get(petController.searchPets);
+
+router
+    .route("/register")
+    .post(petController.createPet);
 
 module.exports = router;
