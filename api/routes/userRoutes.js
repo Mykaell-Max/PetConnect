@@ -23,6 +23,7 @@ router
 router
     .route('/:userId/profilePic')
     .post(imageHandler, userController.uploadProfilePic)
+    .patch(imageHandler, userController.uploadProfilePic)
     .delete(userController.deleteProfilePic)
 
 
