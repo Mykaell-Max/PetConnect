@@ -24,4 +24,9 @@ router
     .patch(petController.addAdoptionRequests)
     .delete(petController.removeAdoptionRequest);
 
+router
+    .route("/:petId/picture")
+    .post(imageHandler, petController.addPetPictures)
+    .delete(petController.deletePetPicture)
+
 module.exports = router;
