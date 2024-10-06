@@ -16,7 +16,7 @@ Para instalar e rodar a aplicação localmente:
 1. Clone este repositório:
 
    ```bash
-   git clone https://github.com/seuusuario/petconnect.git
+   git clone https://github.com/Mykaell-Max/PetConnect
    ```
 
 2. Instale as dependências:
@@ -30,7 +30,7 @@ Para instalar e rodar a aplicação localmente:
     ```env
     MONGO=your_key
     JWTKEY=your_key
-    FIREBASE_KEY =your_key
+    FIREBASE_KEY=your_key
     ```
 
 ## Rotas da API
