@@ -67,7 +67,7 @@ Para instalar e rodar a aplicação localmente:
 
 | Método | Endpoint                             | Descrição                                       |
 |--------|--------------------------------------|-------------------------------------------------|
-| POST   | `/chats/createChat`                  | Cria um novo chat entre dois ou mais usuários   |
+| POST   | `/chats/createChat`                  | Cria um novo chat entre dois usuários           |
 | POST   | `/chats/:chatId`                     | Adiciona uma nova mensagem a um chat            |
 | GET    | `/chats/:chatId`                     | Retorna todas as mensagens de um chat           |
 | DELETE | `/chats/:chatId`                     | Deleta um chat específico                       |
