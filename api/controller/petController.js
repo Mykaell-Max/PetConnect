@@ -1,30 +1,137 @@
 const Pet = require('../../mongo/petModel');
 const User = require('../../mongo/userModel');
+const sharp = require('sharp');
+const { v4: uuidv4 } = require('uuid');
 const APIFeatures = require('../../utils/APIFeatures');
+const {uploadFile, deleteFile} = require('../../firebase/firebaseFunctions')
 
 
-async function createPet(req, res){
-    try{
-        const userId = req.body.donor;
+async function createPet(req, res) {
+    try {
+        let petData;
+        try {
+            petData = JSON.parse(req.body.petData);
+        } catch (error) {
+            return res.status(400).send("Invalid JSON format!");
+        }
 
-        const user = await User.findById(userId);
+        const userId = petData.donor;
+
+        const user = await User.findOne({ _id: userId });
 
         if (!user) {
             return res.status(404).send("User not found!");
         }
 
-        const newPet = new Pet(req.body);
+        const newPet = new Pet(petData);
+        const petPictures = req.files;
 
+        if (!petPictures || petPictures.length < 1 || petPictures.length > 5) {
+            return res.status(400).send("The pet needs to have at least one picture (and a maximum of five)");
+        }
+
+        const picturesUrls = [];
+
+        for (const picture of petPictures) {
+            const picName = `${uuidv4()}.png`;
+
+            const pngPictureBuffer = await sharp(picture.buffer).png().toBuffer();
+            const result = await uploadFile(picName, `pets/${newPet._id}`, pngPictureBuffer);
+
+            if (result.status === 1) {
+                picturesUrls.push(result.url);
+            } else {
+                return res.status(500).send(`Error: ${result.error}`);
+            }
+        }
+
+        newPet.pictures = picturesUrls;
         await newPet.save();
 
-        await User.findByIdAndUpdate(userId, { $addToSet: { registeredPets: newPet._id } }, { new: true });
+        await User.findOneAndUpdate({ _id: userId }, { $addToSet: { registeredPets: newPet._id } }, { new: true });
 
         return res.status(201).json(newPet);
-    }
-    catch(error){
+    } catch (error) {
         return res.status(500).send(error.message);
     }
 }
+
+
+const deletePetPicture = async (req, res) => {
+    try {
+        const petId = req.params.petId;
+        const { pictureUrl } = req.body;
+
+        const pet = await Pet.findById(petId);
+
+        if (!pet) {
+            return res.status(404).json({ message: 'Pet not found!' });
+        }
+
+        if (!pet.pictures.includes(pictureUrl)) {
+            return res.status(400).json({ message: 'Image not found in pet pictures!' });
+        }
+
+        const regularExp = /\/o\/(.+?)\?/;
+        const match = pictureUrl.match(regularExp);
+
+        if (!match) {
+            return res.status(400).json({ message: 'Invalid image URL!' });
+        }
+
+        const filePath = match[1].replace(/%2F/g, '/');
+
+        const result = await deleteFile(filePath, ''); 
+
+        if (result.status === 0) {
+            return res.status(500).send(result.error);
+        }
+
+        pet.pictures = pet.pictures.filter(url => url !== pictureUrl);
+
+        await pet.save();
+
+        return res.status(200).json({ message: 'Pet picture deleted successfully!' });
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+};
+
+
+const addPetPictures = async (req, res) => {
+    try {
+        const petId = req.params.petId;
+        const petPictures = req.files;
+
+        const pet = await Pet.findById(petId);
+
+        if (!pet) {
+            return res.status(404).json({ message: 'Pet not found!' });
+        }
+
+        const petPicturesUrls = [];
+
+        for (const picture of petPictures) {
+            const picName = `${uuidv4()}.png`;
+
+            const pngPictureBuffer = await sharp(picture.buffer).png().toBuffer();
+            const result = await uploadFile(picName, `pets/${pet._id}`, pngPictureBuffer);
+
+            if (result.status === 1) {
+                petPicturesUrls.push(result.url);
+            } else {
+                return res.status(500).send(`Error: ${result.error}`);
+            }
+        }
+
+        pet.pictures.push(...petPicturesUrls);
+        await pet.save();
+
+        return res.status(200).json({ message: 'Pictures added successfully!', pictures: pet.pictures });
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+};
 
 
 async function getPet(req, res){
@@ -147,5 +254,7 @@ module.exports = {
     updatePet,
     deletePet,
     addAdoptionRequests,
-    removeAdoptionRequest
+    removeAdoptionRequest,
+    deletePetPicture,
+    addPetPictures
 };
