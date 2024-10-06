@@ -1,9 +1,23 @@
 const Chat = require('../../mongo/chatModel');
+const User = require('../../mongo/userModel');
 
 async function createChat(req, res) {
     try {
+        const donor = await User.findById(req.body.donor);
+        const adopter = await User.findById(req.body.adopter);
+        
+        if (!donor) {
+            return res.status(404).send("Donor not found!");
+        }
+
+        if (!adopter) {
+            return res.status(404).send("Adopter not found!");
+        }
+        
         const newChat = new Chat(req.body);
         await newChat.save();
+        await User.findByIdAndUpdate(donor._id, { $addToSet: { chats: newChat._id } }, { new: true });
+        await User.findByIdAndUpdate(adopter._id, { $addToSet: { chats: newChat._id } }, { new: true });
         return res.status(201).json(newChat);
     } catch (error) {
         return res.status(500).send(error.message);
@@ -54,16 +68,8 @@ async function getMessages(req, res) {
 async function getUserChats(req, res) {
     try {
         const userId = req.params.userId;
-
-        const chats = await Chat.find({
-            $or: [
-                { donor: userId },
-                { adopter: userId }
-            ]
-        }).populate('donor adopter pet', 'name').select('donor adopter pet messages')
-
-        // preciso saber se isso aqui vai mesmo funcionar, acho importante nao retornar todo o historico só pra uma preview
-        const chatsList = chats.map(chat => ({
+        const Userchats = await User.findById(userId).select('chats').populate('chats');
+        const chatsList = Userchats.chats.map(chat => ({
             donor: chat.donor,
             adopter: chat.adopter,
             pet: chat.pet,
