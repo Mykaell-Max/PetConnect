@@ -74,7 +74,7 @@ Para instalar e rodar a aplicação localmente:
 | DELETE | `/chats/:chatId`                     | Deleta um chat específico                       |
 | GET    | `/chats/preview/:userId`             | Retorna uma prévia de todos os chats do usuário |
 
-## Dependencies
+## Dependências
 
 - **bcrypt**: `^5.1.1` - Biblioteca para hashing de senhas.
 - **dotenv**: `^16.4.5` - Carrega variáveis de ambiente de um arquivo `.env`.
