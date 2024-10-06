@@ -7,6 +7,7 @@ PetConnect é uma API para facilitar o processo de adoção e doação de pets, 
 - [Instalação](#instalação)
 - [Rotas da API](#rotas-da-api)
 - [Dependências](#dependências)
+- [Desenvolvedores](#desenvolvedores)
 
 ## Instalação
 
@@ -85,3 +86,9 @@ Para instalar e rodar a aplicação localmente:
 - **nodemon**: `^3.1.7` - Utilitário para reiniciar automaticamente o servidor durante o desenvolvimento.
 - **sharp**: `^0.33.5` - Biblioteca para processamento de imagens.
 - **uuid**: `^10.0.0` - Biblioteca para gerar IDs únicos.
+
+## Desenvolvedores
+
+- [Mykaell Max](https://github.com/Mykaell-Max) 
+- [Breno Palma](https://github.com/BrenoPalma) 
+- [Bianca malta](https://github.com/BiancaMalta) 
