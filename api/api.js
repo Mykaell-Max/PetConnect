@@ -1,9 +1,13 @@
 const express = require("express");
+const cors = require('cors');
+
 const api = express();
 
 const userRoutes = require("./routes/userRoutes");
 const petRoutes = require("./routes/petRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+
+api.use(cors());
 api.use(express.json());
 
 api.use('/api/users', userRoutes);
