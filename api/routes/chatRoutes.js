@@ -3,6 +3,10 @@ const router = express.Router();
 
 const chatController = require('../controller/chatController');
 
+const {verifyJWT} = require("../../middlewares/jwtAuth");
+
+router.use(verifyJWT);
+
 router
     .route('/createChat')
     .post(chatController.createChat);

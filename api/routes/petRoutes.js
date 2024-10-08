@@ -5,6 +5,10 @@ const petController = require("../controller/petController");
 
 const imageHandler = multer().array("petPictures", 5);
 
+const {verifyJWT} = require("../../middlewares/jwtAuth");
+
+router.use(verifyJWT);
+
 router
     .route("/searchAll") 
     .get(petController.searchPets);

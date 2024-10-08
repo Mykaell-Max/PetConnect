@@ -6,6 +6,8 @@ const imageHandler = multer().single('profilePicture');
 
 const userController = require("../controller/userController");
 
+const {verifyJWT} = require("../../middlewares/jwtAuth");
+
 router
     .route('/register')
     .post(userController.createUser)
@@ -16,15 +18,15 @@ router
 
 router
     .route('/:userId')
-    .get(userController.getUser)
-    .patch(userController.updateUser)
-    .delete(userController.deleteUser)
+    .get(verifyJWT, userController.getUser)
+    .patch(verifyJWT, userController.updateUser)
+    .delete(verifyJWT, userController.deleteUser)
 
 router
     .route('/:userId/profilePic')
-    .post(imageHandler, userController.uploadProfilePic)
-    .patch(imageHandler, userController.uploadProfilePic)
-    .delete(userController.deleteProfilePic)
+    .post(verifyJWT, imageHandler, userController.uploadProfilePic)
+    .patch(verifyJWT, imageHandler, userController.uploadProfilePic)
+    .delete(verifyJWT, userController.deleteProfilePic)
 
 
 module.exports = router;
