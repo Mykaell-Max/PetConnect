@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const { hashPassword } = require('../utils/hashPassword');
+const {hashPassword} = require('../utils/hashPassword');
+const {isLocalValid} = require('../validators/addressValidator')
+
 const userSchema = new mongoose.Schema(
   {
     name:{
@@ -20,7 +22,8 @@ const userSchema = new mongoose.Schema(
         type: String,
         required: true,
         unique: true,
-        trim: true
+        trim: true,
+        match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid e-mail!']
         },
 
     password: {
@@ -31,7 +34,8 @@ const userSchema = new mongoose.Schema(
     phone: {
         type: String,
         required: false,
-        trim: true
+        trim: true,
+        match: [/\(\d{2}\) \d{5}-\d{4}/, 'Invalid phone number!']
         },
 
     description: {
@@ -42,20 +46,22 @@ const userSchema = new mongoose.Schema(
         },
 
     address: {
-      street: {
-        type: String,
-        required: true,
-        trim: true
-      },
-      neighborhood: {
-        type: String,
-        required: true,
-        trim: true
-      },
-    city: {
-        type: String,
-        required: true,
-        trim: true
+        city: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        neighborhood: {
+            type: String,
+            required: true,
+            trim: true,
+            validate: {
+                validator: async function () {
+                    const isCityValid = await isLocalValid(this.address.neighborhood, this.address.city);
+                    return isCityValid;
+                },
+                message: 'Invalid Neighborhood and/or City.'
+            }
         }
     },
 
@@ -85,9 +91,13 @@ const userSchema = new mongoose.Schema(
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Chat',
         required: false,
+    },
+
+    createdAt: {
+        type: Date,
+        default: Date.now,
     }
-    }
-);
+});
 
 
 userSchema.pre('save', async function(next) {

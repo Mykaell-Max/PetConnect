@@ -91,4 +91,4 @@ Para instalar e rodar a aplicação localmente:
 
 - [Mykaell Max](https://github.com/Mykaell-Max) 
 - [Breno Palma](https://github.com/BrenoPalma) 
-- [Bianca malta](https://github.com/BiancaMalta) 
+- [Bianca Malta](https://github.com/BiancaMalta) 
