@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const {isLocalValid} = require('../validators/addressValidator')
 
 const petSchema = new mongoose.Schema({
     petSpecie: {
@@ -52,7 +53,7 @@ const petSchema = new mongoose.Schema({
         required: false
     },
 
-    adress: {
+    address: {
         city: {
             type: String,
             required: true,
@@ -61,17 +62,14 @@ const petSchema = new mongoose.Schema({
         neighborhood: {
             type: String,
             required: true,
-            trim: true
-        },
-        street: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        number: {
-            type: Number,
-            required: true,
-            trim: true
+            trim: true,
+            validate: {
+                validator: async function () {
+                    const isCityValid = await isLocalValid(this.address.neighborhood, this.address.city);
+                    return isCityValid;
+                },
+                message: 'Invalid Neighborhood and/or City.'
+            }
         }
     },
 
