@@ -3,9 +3,10 @@ const router = express.Router();
 const multer = require("multer");
 const petController = require("../controller/petController");
 
-const imageHandler = multer().array("petPictures", 5);
+const imageHandler = multer({limits: { fileSize: 1024 * 1024 * 2 }}).array("petPictures", 5);
 
 const {verifyJWT} = require("../../middlewares/jwtAuth");
+const {petOwnerShip, petAdoptionAuth} = require("../../middlewares/verifyAuth")
 
 router.use(verifyJWT);
 
@@ -20,17 +21,17 @@ router
 router
     .route("/:petId")
     .get(petController.getPet)
-    .patch(petController.updatePet)
-    .delete(petController.deletePet);
+    .patch(petOwnerShip, petController.updatePet)
+    .delete(petOwnerShip, petController.deletePet);
 
 router
     .route("/:petId/adoption-request")
-    .patch(petController.addAdoptionRequests)
-    .delete(petController.removeAdoptionRequest);
+    .patch(petAdoptionAuth, petController.addAdoptionRequests)
+    .delete(petAdoptionAuth, petController.removeAdoptionRequest);
 
 router
     .route("/:petId/picture")
-    .post(imageHandler, petController.addPetPictures)
-    .delete(petController.deletePetPicture)
+    .post(petOwnerShip, imageHandler, petController.addPetPictures)
+    .delete(petOwnerShip, petController.deletePetPicture);
 
 module.exports = router;

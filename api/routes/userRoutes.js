@@ -2,31 +2,35 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 
-const imageHandler = multer().single('profilePicture');
+const imageHandler = multer({limits: { fileSize: 1024 * 1024 * 2 }}).single('profilePicture');
 
 const userController = require("../controller/userController");
 
 const {verifyJWT} = require("../../middlewares/jwtAuth");
+const {userAuth} = require("../../middlewares/verifyAuth")
 
 router
     .route('/register')
-    .post(userController.createUser)
+    .post(userController.createUser);
 
 router
     .route('/login')
-    .post(userController.loginUser)
+    .post(userController.loginUser);
+
+
+router.use(verifyJWT);
+
 
 router
     .route('/:userId')
-    .get(verifyJWT, userController.getUser)
-    .patch(verifyJWT, userController.updateUser)
-    .delete(verifyJWT, userController.deleteUser)
+    .get(userController.getUser)
+    .patch(userAuth, userController.updateUser)
+    .delete(userAuth, userController.deleteUser);
 
 router
     .route('/:userId/profilePic')
-    .post(verifyJWT, imageHandler, userController.uploadProfilePic)
-    .patch(verifyJWT, imageHandler, userController.uploadProfilePic)
-    .delete(verifyJWT, userController.deleteProfilePic)
-
+    .post(userAuth, imageHandler, userController.uploadProfilePic)
+    .patch(userAuth, imageHandler, userController.uploadProfilePic)
+    .delete(userAuth, userController.deleteProfilePic);
 
 module.exports = router;
