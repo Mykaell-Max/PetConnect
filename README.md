@@ -76,12 +76,16 @@ Para instalar e rodar a aplicação localmente:
 
 ## Dependências
 
+- **axios**: `^1.7.7` - Cliente HTTP baseado em Promises para fazer requisições.
 - **bcrypt**: `^5.1.1` - Biblioteca para hashing de senhas.
+- **cors**: `^2.8.5` - Middleware para habilitar CORS (Cross-Origin Resource Sharing).
 - **dotenv**: `^16.4.5` - Carrega variáveis de ambiente de um arquivo `.env`.
 - **express**: `^4.21.0` - Framework web para Node.js.
+- **express-rate-limit**: `^7.4.1` - Middleware para limitar o número de requisições.
 - **firebase**: `^10.14.0` - SDK do Firebase para interações com serviços como Firestore e Storage.
 - **jsonwebtoken**: `^9.0.2` - Biblioteca para gerar e verificar tokens JWT.
 - **mongoose**: `^8.7.0` - ODM (Object Data Modeling) para MongoDB e Node.js.
+- **morgan**: `^1.10.0` - Middleware para logs de requisições HTTP.
 - **multer**: `^1.4.5-lts.1` - Middleware para lidar com uploads de arquivos.
 - **nodemon**: `^3.1.7` - Utilitário para reiniciar automaticamente o servidor durante o desenvolvimento.
 - **sharp**: `^0.33.5` - Biblioteca para processamento de imagens.
