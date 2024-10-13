@@ -31,6 +31,7 @@ Para instalar e rodar a aplicação localmente:
     MONGO=your_key
     JWTKEY=your_key
     FIREBASE_KEY=your_key
+    OPENCAGE_KEY=your_key
     ```
 
 ## Rotas da API
