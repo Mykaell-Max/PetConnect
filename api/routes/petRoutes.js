@@ -8,11 +8,11 @@ const imageHandler = multer({limits: { fileSize: 1024 * 1024 * 2 }}).array("petP
 const {verifyJWT} = require("../../middlewares/jwtAuth");
 const {petOwnerShip, petAdoptionAuth} = require("../../middlewares/verifyAuth")
 
-router.use(verifyJWT);
-
 router
     .route("/searchAll") 
     .get(petController.searchPets);
+
+router.use(verifyJWT);
 
 router
     .route("/register")

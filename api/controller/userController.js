@@ -37,7 +37,7 @@ async function loginUser(req, res) {
             return res.status(403).json({ message: 'Wrong credentials.' });
         }
 
-        const result = await hashCompare(password, user.password)
+        const result = await comparePasswords(password, user.password)
 
         if(result) {
             const payload = {
