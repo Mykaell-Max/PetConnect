@@ -238,7 +238,14 @@ async function searchPets(req, res){
     try{
         const pets = new APIFeatures(Pet.find(), req.query).filter().sort().limitFields().paginate().query;
         const result = await pets;
-        return res.status(200).json(result);
+        const petList = result.map(pet => ({
+            id: pet._id,
+            name: pet.name,
+            age: pet.age,
+            picture: pet.pictures[0], 
+            address: pet.address.neighborhood
+        }));
+        return res.status(200).json(petList);
 
     }
     catch(error){
