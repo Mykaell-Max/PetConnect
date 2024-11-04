@@ -3,6 +3,7 @@ const path = require('path')
 const jwt = require('jsonwebtoken');
 const {comparePasswords} = require('../../utils/hashPassword')
 const {uploadFile, deleteFile} = require('../../firebase/firebaseFunctions')
+const sharp = require('sharp');
 
 async function createUser(req, res) {
     try{
@@ -48,7 +49,8 @@ async function loginUser(req, res) {
 
             const response = {
                 message: "Logged sucessfully!",
-                token: token
+                token: token,
+                userId: user.id
             }
 
             return res.status(200).json(response);
@@ -120,9 +122,9 @@ async function uploadProfilePic(req, res){
         
         const pngPicutreBuffer = await sharp(image.buffer).png().toBuffer();
 
-        const imageName = `${userId}.png}`
+        const imageName = `${userId}.png`
 
-        const imageUrl = await uploadFile(imageName, `users/${newPet._id}`, pngPicutreBuffer);
+        const imageUrl = await uploadFile(imageName, `users/${user._id}`, pngPicutreBuffer);
         
         if(imageUrl.status == 0){
             return res.status(500).send(imageUrl.error);
@@ -153,15 +155,15 @@ async function deleteProfilePic(req, res) {
         }
 
         const imageUrl = user.profilePicture;
-        const regularExp = /\/o\/(.+?)\?/; 
+        const regularExp = /\/o\/(.+?\.(png|jpg|jpeg|gif))/;
         const match = imageUrl.match(regularExp);
-
+        
         if (!match) {
             return res.status(400).json({ message: 'Invalid URL, BONACHÃO!' });
         }
-
+        
         const filePath = match[1].replace(/%2F/g, '/');
-
+        console.log(filePath)
         const result = await deleteFile(filePath, '');
 
         if (result.status === 0) {
