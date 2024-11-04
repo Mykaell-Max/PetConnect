@@ -2,13 +2,6 @@ const mongoose = require("mongoose")
 const {isLocalValid} = require('../validators/addressValidator')
 
 const petSchema = new mongoose.Schema({
-    petSpecie: {
-        type: String,
-        required: true,
-        trim: true,
-        enum: ['Cat', 'Dog']
-    },
-
     name: {
         type: String,
         trim: true,
@@ -25,14 +18,14 @@ const petSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: true,
-        enum: ['Small', 'Medium', 'Large']
+        enum: ['Pequeno', 'Médio', 'Grande']
     },
 
     sex: {
         type: String,
         trim: true,
         required: true,
-        enum: ['Male', 'Female']
+        enum: ['Macho', 'Fêmea']
     },
 
     neutered: {

@@ -17,20 +17,20 @@ router
     .route('/login')
     .post(userController.loginUser);
 
-
-router.use(verifyJWT);
-
-
 router
     .route('/:userId')
     .get(userController.getUser)
+
+router.use(verifyJWT);
+
+router
+    .route('/:userId')
     .patch(userAuth, userController.updateUser)
     .delete(userAuth, userController.deleteUser);
 
 router
     .route('/:userId/profilePic')
     .post(userAuth, imageHandler, userController.uploadProfilePic)
-    .patch(userAuth, imageHandler, userController.uploadProfilePic)
     .delete(userAuth, userController.deleteProfilePic);
 
 module.exports = router;

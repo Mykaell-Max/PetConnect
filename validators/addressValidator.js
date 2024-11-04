@@ -10,7 +10,6 @@ async function isLocalValid(neighborhood, city){
             no_annotations: 1,
             }
         });
-        console.log(response.data.results[0])
         
         if(response.data.results[0].components.suburb && response.data.results[0].components.city){
             return true;

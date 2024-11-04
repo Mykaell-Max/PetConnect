@@ -29,21 +29,21 @@ const userSchema = new mongoose.Schema(
     password: {
         type: String,
         required: true,
-        },
+    },
 
     phone: {
         type: String,
         required: false,
         trim: true,
         match: [/\(\d{2}\) \d{5}-\d{4}/, 'Invalid phone number!']
-        },
+    },
 
     description: {
         type: String,
         required: false,
         maxlength: [500, 'A descrição tem que ter menos de 500 caracteres'],
         trim: true
-        },
+    },
 
     address: {
         city: {
@@ -68,12 +68,12 @@ const userSchema = new mongoose.Schema(
     socialMedias: {
         type: [String],
         required: false,
-        },
+    },
     
     profilePicture: {
         type: String,
         required: false,
-        },
+    },
     
     registeredPets: {
         type: [mongoose.Schema.Types.ObjectId],

@@ -57,7 +57,31 @@ async function petAdoptionAuth(req, res, next) {
 
         const token = req.headers.authorization.split(' ')[1];
         const tokenUserId = jwt.verify(token, global.env.JWTKEY).userId;
+        
+        if (tokenUserId !== adopterId) {
+            return res.status(403).json({message: "You don't have permission!"});
+        }
 
+        next();
+    } catch (error) {
+        return res.status(500).json(error.message);
+    }
+};
+
+async function petRemoveAdoptionAuth(req, res, next) {
+    try {
+        const petId = req.params.petId;
+        const adopterId = req.query.adopterId;
+
+        const pet = await Pet.findById(petId);
+
+        if (!pet) {
+            return res.status(404).send("Pet not found!");
+        }
+
+        const token = req.headers.authorization.split(' ')[1];
+        const tokenUserId = jwt.verify(token, global.env.JWTKEY).userId;
+        
         if (tokenUserId !== adopterId) {
             return res.status(403).json({message: "You don't have permission!"});
         }
@@ -110,4 +134,4 @@ async function createChatAuth(req, res, next){
 };
 
 
-module.exports = {userAuth, petOwnerShip, petAdoptionAuth, chatAuth, createChatAuth};
+module.exports = {userAuth, petOwnerShip, petAdoptionAuth, chatAuth, createChatAuth, petRemoveAdoptionAuth};

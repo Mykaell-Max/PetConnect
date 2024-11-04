@@ -3,10 +3,11 @@ const router = express.Router();
 const multer = require("multer");
 const petController = require("../controller/petController");
 
-const imageHandler = multer({limits: { fileSize: 1024 * 1024 * 2 }}).array("petPictures", 5);
+const imageHandler = multer().array("petPictures", 5);
+// {limits: { fileSize: 1024 * 1024 * 2 }} not sure what to do with this
 
 const {verifyJWT} = require("../../middlewares/jwtAuth");
-const {petOwnerShip, petAdoptionAuth} = require("../../middlewares/verifyAuth")
+const {petOwnerShip, petAdoptionAuth, petRemoveAdoptionAuth} = require("../../middlewares/verifyAuth")
 
 router
     .route("/searchAll") 
@@ -27,7 +28,7 @@ router
 router
     .route("/:petId/adoption-request")
     .patch(petAdoptionAuth, petController.addAdoptionRequests)
-    .delete(petAdoptionAuth, petController.removeAdoptionRequest);
+    .delete(petRemoveAdoptionAuth, petController.removeAdoptionRequest);
 
 router
     .route("/:petId/picture")
